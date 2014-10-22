@@ -60,7 +60,8 @@ foreach my $commit (@revlist) {
     my $matched = '';
 
     foreach my $checker (@ARGV) {
-      if (system($checker_dir . $checker, $commit, $status, $file) != 0) {
+      my ($exe, @arg) = split('@', $checker);
+      if (system($checker_dir . $exe, $commit, $status, $file, @arg) != 0) {
           $matched .= ' ' . $checker;
       }
     }
