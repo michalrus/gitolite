@@ -2,12 +2,4 @@
 
 [ -e "allowed-paths/$4" ] || exit 0
 
-cat "allowed-paths/$4" | {
-  notfound=1
-
-  while read regex ; do
-    echo "$3" | grep -E "$regex" >/dev/null && notfound=0
-  done
-
-  exit $notfound
-}
+echo "$3" | grep -Eqf "allowed-paths/$4"
