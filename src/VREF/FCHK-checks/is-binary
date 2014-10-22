@@ -1,5 +1,5 @@
 #!/bin/sh
 
-echo "$2" | grep -Ei '\.(mov|avi|mp4|wmv|pdb|dll|exe|png|ico|icns|gif|jpg|mwb|zip|tgz|gz|bz2|7z|rar|swf|fla|jar|mo|ttf|foo|mp3|icc|pdf|bmp|wmf|svg)$' >/dev/null && exit 1
+echo "$3" | grep -Ei '\.(mov|avi|mp4|wmv|pdb|dll|exe|png|ico|icns|gif|jpg|mwb|zip|tgz|gz|bz2|7z|rar|swf|fla|jar|mo|ttf|foo|mp3|icc|pdf|bmp|wmf|svg)$' >/dev/null && exit 1
 
 exit 0
