@@ -47,19 +47,20 @@ my $last = '';
 foreach my $commit (@revlist) {
   my $commit_printed = 0;
 
-  open GH, '-|', 'git', 'show', '--pretty=format:', '--diff-filter=ACMRTUXB', '--name-only', $commit
+  open GH, '-|', 'git', 'show', '--pretty=format:', '--name-status', $commit
     or die "failed: git show $commit: $!";
   my @files = <GH>;
   close GH;
   chomp @files;
 
-  foreach my $file (@files) {
+  foreach my $status_file (@files) {
+    my ($status, $file) = split("\t", $status_file);
     next if (!length $file);
 
     my $matched = '';
 
     foreach my $checker (@ARGV) {
-      if (system($checker_dir . $checker, $commit, $file) != 0) {
+      if (system($checker_dir . $checker, $commit, $status, $file) != 0) {
           $matched .= ' ' . $checker;
       }
     }
