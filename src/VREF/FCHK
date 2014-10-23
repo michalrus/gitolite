@@ -6,6 +6,7 @@ use utf8;
 
 use Cwd 'abs_path';
 use File::Basename;
+use List::Util qw[min max];
 
 my $checker_dir = dirname(abs_path(__FILE__)) . '/FCHK-checks/';
 
@@ -44,6 +45,11 @@ my $list = '';
 my $first = '';
 my $last = '';
 
+my $checker_length = 0;
+foreach my $checker (@ARGV) {
+  $checker_length = max($checker_length, length $checker);
+}
+
 foreach my $commit (@revlist) {
   my $commit_printed = 0;
 
@@ -62,7 +68,7 @@ foreach my $commit (@revlist) {
     foreach my $checker (@ARGV) {
       my ($exe, @arg) = split('@', $checker);
       if (system($checker_dir . $exe, $commit, $status, $file, @arg) != 0) {
-          $matched .= ' ' . $checker;
+        $matched .= sprintf "    %- " . ($checker_length + 0) . "s  @  %s\n", "${checker}", $file;
       }
     }
 
@@ -75,7 +81,7 @@ foreach my $commit (@revlist) {
         $first = $commit;
       }
       $last = $commit;
-      $list .= '    ' . $file . ':' . $matched . "\n";
+      $list .= $matched;
     }
   }
 }
