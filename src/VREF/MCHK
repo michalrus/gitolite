@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use utf8;
+
+use Cwd 'abs_path';
+use File::Basename;
+use List::Util qw[min max];
+
+use lib dirname (__FILE__);
+use ForeachNewRev;
+
+my $checker_dir = dirname(abs_path(__FILE__)) . '/MCHK-checks/';
+
+my @checkers = @ARGV[7..$#ARGV];
+my $checker_length = 0;
+foreach my $checker (@checkers) {
+  $checker_length = max($checker_length, length $checker);
+}
+
+foreach_new_rev(sub {
+  my ($commit) = @_;
+
+  my $result = '';
+
+  open GH, '-|', 'git', 'log', '--format=%B', '-n', '1', $commit
+    or die "failed: git log: $!";
+  my @msg_lines = <GH>;
+  close GH;
+
+  foreach my $checker (@checkers) {
+    my ($exe, @arg) = split('@', $checker);
+    if (system("git log --format=%B -n 1 ${commit} | ${checker_dir}${exe}") != 0) {
+      $result .= sprintf "    %- " . $checker_length . "s  @  %s\n", $checker, '---COMMIT-MESSAGE---';
+    }
+  }
+
+  return $result;
+});

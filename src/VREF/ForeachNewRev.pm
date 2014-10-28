@@ -73,7 +73,7 @@ sub foreach_new_rev {
     print "Standards would be violated, were this push accepted.\n";
 
     if ($last eq $first) {
-      print 'Fix the files below, `git add\' them and `git commit --amend`.', "\n";
+      print 'Fix the commit below (`git add\' and `git commit --amend`).', "\n";
     }
     else {
       print 'Fix all affected commits below using `git rebase -i ' . $first . '^`.', "\n";
