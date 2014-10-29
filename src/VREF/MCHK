@@ -32,7 +32,7 @@ foreach_new_rev(sub {
   foreach my $checker (@checkers) {
     my ($exe, @arg) = split('@', $checker);
     if (system("git log --format=%B -n 1 ${commit} | ${checker_dir}${exe}") != 0) {
-      $result .= sprintf "    %- " . $checker_length . "s  @  %s\n", $checker, '---COMMIT-MESSAGE---';
+      $result .= '    COMMIT-MESSAGE  :  ' . $checker . "\n";
     }
   }
 
