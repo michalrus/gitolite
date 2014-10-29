@@ -1,0 +1,7 @@
+$ wget 'http://www.gutenberg.org/cache/epub/29765/pg29765.txt'
+
+$ dos2unix pg29765.txt
+
+$ cat pg29765.txt | /usr/bin/grep -Pzo '(?s)\n[^a-z]+\n[^\[]*[^a-z]v\.\N*' > verbdict
+
+$ cat verbdict | sed -re 's/\s*;\s*/\n/g' | /usr/bin/grep -E '^[A-Z\-]+$' | /usr/bin/grep -vFx 'IS' | sort --unique > verblist
