@@ -8,50 +8,21 @@ use Cwd 'abs_path';
 use File::Basename;
 use List::Util qw[min max];
 
+use lib dirname (__FILE__);
+use ForeachNewRev;
+
 my $checker_dir = dirname(abs_path(__FILE__)) . '/FCHK-checks/';
 
-# ----------- ARGV
-
-die 'not meant to be run manually'
-  unless (scalar(@ARGV) > 7);
-
-my ($ref, $oldsha, $newsha, $oldtree, $newtree, $access, $refex) = @ARGV;
-splice @ARGV, 0, 7;
-
-# ----------- exclude (from rev-list)
-
-my @exclude;
-if ($oldsha eq '0000000000000000000000000000000000000000') {
-  open GH, '-|', 'git', 'for-each-ref', '--format', '^%(refname:short)', 'refs/heads/'
-    or die "failed: git for-each-ref: $!";
-  @exclude = <GH>;
-  close GH;
-}
-else {
-  @exclude = ('^' . $oldsha);
-}
-chomp @exclude;
-
-# ----------- rev-list (new pushed commits)
-
-open GH, '-|', 'git', 'rev-list', '--reverse', $newsha, @exclude
-  or die "failed: git rev-list: $!";
-my @revlist = <GH>;
-close GH;
-chomp @revlist;
-
-# ----------- for each new commit...
-my $list = '';
-my $first = '';
-my $last = '';
-
+my @checkers = @ARGV[7..$#ARGV];
 my $checker_length = 0;
-foreach my $checker (@ARGV) {
+foreach my $checker (@checkers) {
   $checker_length = max($checker_length, length $checker);
 }
 
-foreach my $commit (@revlist) {
-  my $commit_printed = 0;
+foreach_new_rev(sub {
+  my ($commit) = @_;
+
+  my $result = '';
 
   open GH, '-|', 'git', 'show', '--pretty=format:', '--name-status', $commit
     or die "failed: git show $commit: $!";
@@ -63,60 +34,13 @@ foreach my $commit (@revlist) {
     my ($status, $file) = split("\t", $status_file);
     next if (!length $file);
 
-    my $matched = '';
-
-    foreach my $checker (@ARGV) {
+    foreach my $checker (@checkers) {
       my ($exe, @arg) = split('@', $checker);
       if (system($checker_dir . $exe, $commit, $status, $file, @arg) != 0) {
-        $matched .= sprintf "    %- " . ($checker_length + 0) . "s  @  %s\n", "${checker}", $file;
+        $result .= sprintf "    %- " . $checker_length . "s  @  %s\n", $checker, $file;
       }
     }
-
-    if (length $matched) {
-      if (!$commit_printed) {
-        $list .= "\n" . '  ' . $commit . "\n";
-        $commit_printed = 1;
-      }
-      if (!length $first) {
-        $first = $commit;
-      }
-      $last = $commit;
-      $list .= $matched;
-    }
-  }
-}
-
-# ----------- print refex
-
-if (length $list) {
-  print "\n";
-  print "------------------------------------------------------------------\n";
-  print "\n";
-  print "Hey, listen! Some of the files you're trying to push do not adhere\n";
-  print "to certain standards. We'll have to do something about that. :-)\n";
-  print "\n";
-
-  if ($last eq $first) {
-    print 'Only your last local commit is affected. Consider yourself lucky!', "\n";
-    print 'To change your latest commit: change files, `git add\' them and:', "\n";
-    print "\n";
-    print '  $ git commit --amend', "\n";
-  }
-  else {
-    print 'More than one commit is affected. To change all affected commits:', "\n";
-    print "\n";
-    print '  $ git rebase -i ' . $first . '^', "\n";
   }
 
-  print "\n";
-  print "------------------------------------------------------------------\n";
-  print "\n";
-  print "List of lousy files and violated standards in your pushed commits:\n";
-
-  print $list;
-  print "\n";
-  print "------------------------------------------------------------------\n";
-  print "\n";
-
-  print $refex, "\n";
-}
+  return $result;
+});
