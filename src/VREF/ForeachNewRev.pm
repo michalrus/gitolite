@@ -25,6 +25,10 @@ sub foreach_new_rev {
 
   # ----------- exclude (from rev-list)
 
+  if ($newsha eq '0000000000000000000000000000000000000000') {
+    return;
+  }
+
   my @exclude;
   if ($oldsha eq '0000000000000000000000000000000000000000') {
     open GH, '-|', 'git', 'for-each-ref', '--format', '^%(refname:short)', 'refs/heads/'
