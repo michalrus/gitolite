@@ -5,4 +5,5 @@ $ dos2unix pg29765.txt
 $ cat pg29765.txt | /usr/bin/grep -Pzo '(?s)\n[^a-z]+\n[^\[]*[^a-z]v\.\N*' > verbdict
 
 $ cat verbdict | sed -re 's/\s*;\s*/\n/g' | /usr/bin/grep -E '^[A-Z\-]+$' | /usr/bin/grep -vFx 'IS' | sed -re 's/^INITIAL$/INITIALIZE/' | sort --unique > non-imperative.verblist
-$ echo OPTIMIZE >> non-imperative.verblist
+$ echo "OPTIMIZE" >> non-imperative.verblist
+$ echo "DON'T"    >> non-imperative.verblist
