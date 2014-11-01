@@ -4,5 +4,10 @@
 
 patterns="$(readlink -f "$0").patterns"
 [ -e "$patterns" ] || exit 0
+echo "$3" | grep -Eqif "$patterns" && exit 1
 
-echo "$3" | grep -Eqif "$patterns" && exit 1 || exit 0
+magics="$(readlink -f "$0").magics"
+[ -e "$magics" ] || exit 0
+git cat-file blob "$1:$3" | file - | grep -Eqif "$magics" && exit 1
+
+exit 0
