@@ -1,0 +1,9 @@
+#!/bin/sh
+
+[ "$2" = "D" ] && exit 0
+
+patterns="$(readlink -f "$0").patterns"
+[ -e "$patterns" ] || exit 0
+echo "$3" | grep -Eqif "$patterns" && exit 1
+
+exit 0
