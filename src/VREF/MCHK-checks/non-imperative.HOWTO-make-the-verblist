@@ -8,4 +8,5 @@ $ cat verbdict | sed -re 's/\s*;\s*/\n/g' | /usr/bin/grep -E '^[A-Z\-]+$' | /usr
 $ echo "OPTIMIZE"    >> non-imperative.verblist
 $ echo "UPDATE"      >> non-imperative.verblist
 $ echo "DON'T"       >> non-imperative.verblist
+$ echo "DON’T"       >> non-imperative.verblist
 $ echo "PARAMETRIZE" >> non-imperative.verblist
