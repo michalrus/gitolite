@@ -10,3 +10,4 @@ $ echo "UPDATE"      >> non-imperative.verblist
 $ echo "DON'T"       >> non-imperative.verblist
 $ echo "DON’T"       >> non-imperative.verblist
 $ echo "PARAMETRIZE" >> non-imperative.verblist
+$ echo "REFACTORIZE" >> non-imperative.verblist
