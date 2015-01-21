@@ -1,0 +1,8 @@
+#!/bin/sh
+
+newsha=$3
+
+[ "$newsha" = "0000000000000000000000000000000000000000" ] && exit
+
+git log --name-only --format=%n "$newsha" --not --all |
+  sort -u | grep . | sed -e "s.^.VREF/BRANCH_FILE/$1/-/."
