@@ -2,7 +2,13 @@
 
 [ "$2" = "D" ] && exit 0
 
-echo "$3" | grep -Ei '\.(xml|bmml)$' >/dev/null || exit 0
+is_xml=''
+
+[ $is_xml ] || echo "$3" | grep -Eqi '\.(xml|bmml)$' >/dev/null && is_xml='1'
+
+[ $is_xml ] || git cat-file blob "$1:$3" | file - | grep -Eqi "XML" && is_xml='1'
+
+[ $is_xml ] || exit 0
 
 pre="$(git cat-file blob "$1:$3" | md5sum)"
 post="$(git cat-file blob "$1:$3" | xmllint --format - 2>/dev/null | md5sum)"
