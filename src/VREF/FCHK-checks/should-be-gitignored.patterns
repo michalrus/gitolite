@@ -6,7 +6,6 @@
 \.exe$
 \.dll$
 \.class$
-\.json$
 \.sublime-project$
 \.history$
 \.cache$
